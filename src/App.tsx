@@ -61,8 +61,6 @@ const App = () => {
                 onZusStageChange={setZusStage}
                 sicknessPaid={sicknessPaid}
                 onSicknessPaidChange={setSicknessPaid}
-                annualRevenue={result.annualRevenue}
-                tierMultiplier={result.tierMultiplier}
               />
             </Grid>
 
