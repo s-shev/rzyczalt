@@ -35,13 +35,23 @@ const App = () => {
       <Box className="hero-glow" />
       <Container
         maxWidth="lg"
-        sx={{ py: { xs: 5, md: 8 }, position: "relative" }}
+        sx={{
+          py: { xs: 2.5, sm: 4, md: 8 },
+          px: { xs: 2, sm: 3 },
+          position: "relative",
+          maxWidth: "100%",
+        }}
       >
-        <Stack spacing={4}>
+        <Stack spacing={{ xs: 3, md: 4 }}>
           <CalculatorHeader />
 
-          <Grid container spacing={3} className="section-fade delay-1">
-            <Grid item xs={12} md={6}>
+          <Grid
+            container
+            gap={{ xs: 2, md: 3 }}
+            spacing={{ xs: 0, md: 0 }}
+            className="section-fade delay-1"
+          >
+            <Grid item xs={12} md={6} flex="1 1 auto !important">
               <InputsPanel
                 grossIncome={grossIncome}
                 onGrossIncomeChange={setGrossIncome}
@@ -56,8 +66,8 @@ const App = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
-              <Stack spacing={3}>
+            <Grid item xs={12} md={6} flex="1 1 auto !important">
+              <Stack spacing={{ xs: 2, md: 3 }}>
                 <NetIncomePanel
                   netIncome={result.netIncome}
                   taxDue={result.taxDue}

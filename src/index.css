@@ -20,6 +20,13 @@ body {
     radial-gradient(1200px 600px at 10% -10%, #fff9ee 0%, transparent 60%),
     radial-gradient(900px 500px at 90% 0%, #f1fff8 0%, transparent 55%),
     linear-gradient(120deg, var(--bg-warm), var(--bg-sand));
+  font-size: 14px;
+}
+
+@media (min-width: 600px) {
+  body {
+    font-size: 16px;
+  }
 }
 
 #root {
@@ -39,6 +46,21 @@ body {
   filter: blur(20px);
   animation: float 12s ease-in-out infinite;
   z-index: 0;
+}
+
+@media (max-width: 599px) {
+  .hero-glow {
+    inset: -40% -10% auto auto;
+    width: 260px;
+    height: 260px;
+    filter: blur(16px);
+  }
+}
+
+@media (max-width: 359px) {
+  .hero-glow {
+    display: none;
+  }
 }
 
 .section-fade {
@@ -74,5 +96,51 @@ body {
   }
   100% {
     transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 599px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Ensure no horizontal overflow */
+  .MuiContainer-root {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Better chip wrapping */
+  .MuiChip-root {
+    max-width: 100%;
+  }
+
+  /* Ensure toggle buttons wrap cleanly */
+  .MuiToggleButtonGroup-root {
+    width: 100%;
+  }
+
+  /* Tighter form labels */
+  .MuiFormControlLabel-root {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* Better input sizing */
+  .MuiTextField-root {
+    width: 100%;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 359px) {
+  .MuiPaper-root {
+    border-radius: 12px !important;
+  }
+
+  /* Even tighter spacing */
+  .MuiStack-root {
+    gap: 0.75rem;
   }
 }

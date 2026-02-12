@@ -5,7 +5,7 @@ const AssumptionsPanel = () => {
     <Paper
       elevation={0}
       className="section-fade delay-2"
-      sx={{ p: { xs: 3, md: 4 }, border: "1px dashed #D7CCBD" }}
+      sx={{ p: { xs: 2, sm: 2.5, md: 4 }, border: "1px dashed #D7CCBD" }}
     >
       <Stack spacing={1}>
         <Typography variant="subtitle2">Assumptions</Typography>
