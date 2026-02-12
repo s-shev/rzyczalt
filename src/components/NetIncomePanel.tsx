@@ -1,18 +1,101 @@
-import { Divider, Paper, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  ButtonBase,
+  Collapse,
+  Divider,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { useMemo, useState } from "react";
 import Decimal from "decimal.js";
-import { formatCurrency } from "../lib/formatters";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { formatCurrency, formatPercent } from "../lib/formatters";
+import FormulaBlock from "./FormulaBlock";
+import FormulaBadge from "./FormulaBadge";
 
 type NetIncomePanelProps = {
+  grossIncome: number;
   netIncome: Decimal;
   taxDue: Decimal;
   zusTotal: Decimal;
+  healthContribution: Decimal;
+  socialInsurance: Decimal;
+  ryczaltRate: number;
+};
+
+type FormulaParamProps = {
+  label: string;
+  value: string;
+};
+
+const FormulaParam = ({ label, value }: FormulaParamProps) => {
+  return (
+    <Box
+      component="span"
+      sx={{ display: "inline-flex", alignItems: "center", gap: 0.4 }}
+    >
+      <Box component="span">{label}</Box>
+      <Box
+        component="span"
+        sx={{
+          px: 0.6,
+          py: 0.15,
+          borderRadius: 999,
+          border: "1px solid #D5CBB8",
+          backgroundColor: "#EFE6D5",
+          color: "#4A4238",
+          fontSize: "0.7rem",
+          lineHeight: 1.2,
+          whiteSpace: "nowrap",
+        }}
+      >
+        {value}
+      </Box>
+    </Box>
+  );
+};
+
+type FormulaLineProps = {
+  children: React.ReactNode;
+};
+
+const FormulaLine = ({ children }: FormulaLineProps) => {
+  return (
+    <Typography
+      variant="caption"
+      color="inherit"
+      component="div"
+      sx={{
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: 0.4,
+      }}
+    >
+      {children}
+    </Typography>
+  );
 };
 
 const NetIncomePanel = ({
+  grossIncome,
   netIncome,
   taxDue,
   zusTotal,
+  healthContribution,
+  socialInsurance,
+  ryczaltRate,
 }: NetIncomePanelProps) => {
+  const [taxOpen, setTaxOpen] = useState(false);
+  const [zusOpen, setZusOpen] = useState(false);
+  const grossDecimal = useMemo(() => new Decimal(grossIncome), [grossIncome]);
+  const taxableBase = useMemo(
+    () => grossDecimal.sub(healthContribution.mul(0.5)).sub(socialInsurance),
+    [grossDecimal, healthContribution, socialInsurance],
+  );
+
   return (
     <Paper
       elevation={0}
@@ -28,13 +111,109 @@ const NetIncomePanel = ({
         </Typography>
         <Divider />
         <Stack spacing={{ xs: 1, md: 1.5 }}>
-          <Stack direction="row" justifyContent="space-between" spacing={1.5}>
-            <Typography color="text.secondary">Tax due</Typography>
-            <Typography>{formatCurrency(taxDue)}</Typography>
+          <Stack spacing={0.6}>
+            <Stack direction="row" justifyContent="space-between" spacing={1.5}>
+              <ButtonBase
+                onClick={() => setTaxOpen((prev) => !prev)}
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 0.6,
+                  color: "text.secondary",
+                  borderRadius: 1,
+                  px: 0.4,
+                  py: 0.2,
+                }}
+              >
+                <Typography color="text.secondary">Tax due</Typography>
+                {taxOpen ? (
+                  <ExpandLessIcon fontSize="small" />
+                ) : (
+                  <ExpandMoreIcon fontSize="small" />
+                )}
+              </ButtonBase>
+              <Typography>{formatCurrency(taxDue)}</Typography>
+            </Stack>
+            <Collapse in={taxOpen} timeout="auto" unmountOnExit>
+              <FormulaBlock>
+                <Stack spacing={0.4}>
+                  <FormulaLine>
+                    Taxable base =
+                    <FormulaParam
+                      label="Gross income"
+                      value={formatCurrency(grossDecimal)}
+                    />
+                    - 0.5 *
+                    <FormulaParam
+                      label="Health contribution"
+                      value={formatCurrency(healthContribution)}
+                    />
+                    -
+                    <FormulaParam
+                      label="Social insurance"
+                      value={formatCurrency(socialInsurance)}
+                    />
+                    = {formatCurrency(taxableBase)}
+                  </FormulaLine>
+                  <FormulaLine>
+                    Tax due =
+                    <FormulaParam
+                      label="Taxable base"
+                      value={formatCurrency(taxableBase)}
+                    />
+                    *
+                    <FormulaParam
+                      label="Ryczałt rate"
+                      value={formatPercent(ryczaltRate)}
+                    />
+                  </FormulaLine>
+                </Stack>
+              </FormulaBlock>
+            </Collapse>
           </Stack>
-          <Stack direction="row" justifyContent="space-between" spacing={1.5}>
-            <Typography color="text.secondary">ZUS total</Typography>
-            <Typography>{formatCurrency(zusTotal)}</Typography>
+
+          <Stack spacing={0.6}>
+            <Stack direction="row" justifyContent="space-between" spacing={1.5}>
+              <ButtonBase
+                onClick={() => setZusOpen((prev) => !prev)}
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 0.6,
+                  color: "text.secondary",
+                  borderRadius: 1,
+                  px: 0.4,
+                  py: 0.2,
+                }}
+              >
+                <Typography color="text.secondary">ZUS total</Typography>
+                {zusOpen ? (
+                  <ExpandLessIcon fontSize="small" />
+                ) : (
+                  <ExpandMoreIcon fontSize="small" />
+                )}
+              </ButtonBase>
+              <Typography>{formatCurrency(zusTotal)}</Typography>
+            </Stack>
+            <Collapse in={zusOpen} timeout="auto" unmountOnExit>
+              <FormulaBlock>
+                <Stack spacing={0.4}>
+                  <FormulaLine>
+                    ZUS total =
+                    <FormulaParam
+                      label="Health contribution"
+                      value={formatCurrency(healthContribution)}
+                    />
+                    +
+                    <FormulaParam
+                      label="Social insurance"
+                      value={formatCurrency(socialInsurance)}
+                    />
+                    = {formatCurrency(zusTotal)}
+                  </FormulaLine>
+                </Stack>
+              </FormulaBlock>
+            </Collapse>
           </Stack>
         </Stack>
       </Stack>

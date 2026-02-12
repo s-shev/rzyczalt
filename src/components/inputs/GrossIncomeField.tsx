@@ -10,10 +10,11 @@ const GrossIncomeField = ({ value, onChange }: GrossIncomeFieldProps) => {
     <TextField
       label="Gross income (monthly)"
       value={value}
-      onChange={(event) => onChange(event.target.value)}
-      type="number"
+      onChange={(event) => onChange(event.target.value.replace(/,/g, "."))}
+      type="text"
       size="small"
       fullWidth
+      inputProps={{ inputMode: "decimal", pattern: "^[0-9]*[.,]?[0-9]*$" }}
       InputProps={{
         endAdornment: <InputAdornment position="end">PLN</InputAdornment>,
       }}

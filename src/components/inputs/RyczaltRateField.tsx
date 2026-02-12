@@ -46,13 +46,13 @@ const RyczaltRateField = ({ rate, onRateChange }: RyczaltRateFieldProps) => {
                 What is the ryczalt rate?
               </Typography>
               <Typography variant="body2">
-                It is the flat tax percentage tied to your business activity.
-                Choose the rate assigned to your activity (PKD). This calculator
-                assumes a single rate for the whole income.
+                It is the flat tax percentage assigned to your business
+                activity. Pick the rate for your PKD. This calculator assumes
+                one rate for the entire income.
               </Typography>
               <Typography variant="caption">
                 If you have multiple activities with different rates, run
-                separate scenarios and combine the results.
+                separate scenarios and add the results together.
               </Typography>
             </Stack>
           }

@@ -34,10 +34,7 @@ const InfoTooltip = ({
 }: InfoTooltipProps) => {
   return (
     <StyledTooltip title={title} placement={placement} arrow>
-      <IconButton
-        size="small"
-        aria-label={ariaLabel}
-      >
+      <IconButton size="small" aria-label={ariaLabel}>
         <InfoOutlinedIcon fontSize="small" />
       </IconButton>
     </StyledTooltip>
