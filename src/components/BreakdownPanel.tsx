@@ -10,7 +10,7 @@ import { useState } from "react";
 import Decimal from "decimal.js";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { CalcOutput } from "../lib/calc";
+import { CalcOutput, ZusStage } from "../lib/calc";
 import { formatCurrency, formatPercent } from "../lib/formatters";
 import { RYCZALT_2026 } from "../data/ryczalt2026";
 import FormulaBlock from "./FormulaBlock";
@@ -24,6 +24,8 @@ type BreakdownPanelProps = {
   socialInsurance: CalcOutput["socialInsurance"];
   socialInsuranceBase: CalcOutput["socialInsuranceBase"];
   tierMultiplier: CalcOutput["tierMultiplier"];
+  zusStage: ZusStage;
+  sicknessPaid: boolean;
 };
 
 type FormulaParamProps = {
@@ -59,6 +61,18 @@ const FormulaLine = ({ children }: FormulaLineProps) => {
         gap: 0.4,
       }}
     >
+      {children}
+    </Typography>
+  );
+};
+
+type FormulaNoteProps = {
+  children: React.ReactNode;
+};
+
+const FormulaNote = ({ children }: FormulaNoteProps) => {
+  return (
+    <Typography variant="caption" color="text.secondary" component="div">
       {children}
     </Typography>
   );
@@ -113,6 +127,8 @@ const BreakdownPanel = ({
   socialInsurance,
   socialInsuranceBase,
   tierMultiplier,
+  zusStage,
+  sicknessPaid,
 }: BreakdownPanelProps) => {
   const tierThresholds = RYCZALT_2026.tierThresholds;
   const lowMax = new Decimal(tierThresholds.lowMax);
@@ -122,6 +138,8 @@ const BreakdownPanel = ({
     : annualRevenue.lte(midMax)
       ? `${formatCurrency(lowMax)} - ${formatCurrency(midMax)}`
       : `Above ${formatCurrency(midMax)}`;
+  const isUlga = zusStage === "ulga";
+  const isMaly = zusStage === "maly";
 
   return (
     <Paper
@@ -174,126 +192,170 @@ const BreakdownPanel = ({
           </BreakdownRow>
 
           <BreakdownRow label="Pension" value={socialBreakdown.pension}>
-            <FormulaLine>
-              Pension =
-              <FormulaParam
-                label="Social insurance base"
-                value={formatCurrency(socialInsuranceBase)}
-              />
-              *
-              <FormulaParam
-                label="Rate"
-                value={formatPercent(RYCZALT_2026.socialRates.pension)}
-              />
-            </FormulaLine>
-            <FormulaLine>
-              = {formatCurrency(socialBreakdown.pension)}
-            </FormulaLine>
+            {isUlga ? (
+              <FormulaNote>Not applicable under Ulga na start.</FormulaNote>
+            ) : (
+              <>
+                <FormulaLine>
+                  Pension =
+                  <FormulaParam
+                    label="Social insurance base"
+                    value={formatCurrency(socialInsuranceBase)}
+                  />
+                  *
+                  <FormulaParam
+                    label="Rate"
+                    value={formatPercent(RYCZALT_2026.socialRates.pension)}
+                  />
+                </FormulaLine>
+                <FormulaLine>
+                  = {formatCurrency(socialBreakdown.pension)}
+                </FormulaLine>
+              </>
+            )}
           </BreakdownRow>
 
           <BreakdownRow label="Disability" value={socialBreakdown.disability}>
-            <FormulaLine>
-              Disability =
-              <FormulaParam
-                label="Social insurance base"
-                value={formatCurrency(socialInsuranceBase)}
-              />
-              *
-              <FormulaParam
-                label="Rate"
-                value={formatPercent(RYCZALT_2026.socialRates.disability)}
-              />
-            </FormulaLine>
-            <FormulaLine>
-              = {formatCurrency(socialBreakdown.disability)}
-            </FormulaLine>
+            {isUlga ? (
+              <FormulaNote>Not applicable under Ulga na start.</FormulaNote>
+            ) : (
+              <>
+                <FormulaLine>
+                  Disability =
+                  <FormulaParam
+                    label="Social insurance base"
+                    value={formatCurrency(socialInsuranceBase)}
+                  />
+                  *
+                  <FormulaParam
+                    label="Rate"
+                    value={formatPercent(RYCZALT_2026.socialRates.disability)}
+                  />
+                </FormulaLine>
+                <FormulaLine>
+                  = {formatCurrency(socialBreakdown.disability)}
+                </FormulaLine>
+              </>
+            )}
           </BreakdownRow>
 
           <BreakdownRow label="Sickness" value={socialBreakdown.sickness}>
-            <FormulaLine>
-              Sickness =
-              <FormulaParam
-                label="Social insurance base"
-                value={formatCurrency(socialInsuranceBase)}
-              />
-              *
-              <FormulaParam
-                label="Rate"
-                value={formatPercent(RYCZALT_2026.socialRates.sickness)}
-              />
-            </FormulaLine>
-            <FormulaLine>
-              = {formatCurrency(socialBreakdown.sickness)}
-            </FormulaLine>
+            {isUlga ? (
+              <FormulaNote>Not applicable under Ulga na start.</FormulaNote>
+            ) : !sicknessPaid ? (
+              <FormulaNote>
+                Optional sickness contribution not selected.
+              </FormulaNote>
+            ) : (
+              <>
+                <FormulaLine>
+                  Sickness =
+                  <FormulaParam
+                    label="Social insurance base"
+                    value={formatCurrency(socialInsuranceBase)}
+                  />
+                  *
+                  <FormulaParam
+                    label="Rate"
+                    value={formatPercent(RYCZALT_2026.socialRates.sickness)}
+                  />
+                </FormulaLine>
+                <FormulaLine>
+                  = {formatCurrency(socialBreakdown.sickness)}
+                </FormulaLine>
+              </>
+            )}
           </BreakdownRow>
 
           <BreakdownRow label="Accident" value={socialBreakdown.accident}>
-            <FormulaLine>
-              Accident =
-              <FormulaParam
-                label="Social insurance base"
-                value={formatCurrency(socialInsuranceBase)}
-              />
-              *
-              <FormulaParam
-                label="Rate"
-                value={formatPercent(RYCZALT_2026.socialRates.accident)}
-              />
-            </FormulaLine>
-            <FormulaLine>
-              = {formatCurrency(socialBreakdown.accident)}
-            </FormulaLine>
+            {isUlga ? (
+              <FormulaNote>Not applicable under Ulga na start.</FormulaNote>
+            ) : (
+              <>
+                <FormulaLine>
+                  Accident =
+                  <FormulaParam
+                    label="Social insurance base"
+                    value={formatCurrency(socialInsuranceBase)}
+                  />
+                  *
+                  <FormulaParam
+                    label="Rate"
+                    value={formatPercent(RYCZALT_2026.socialRates.accident)}
+                  />
+                </FormulaLine>
+                <FormulaLine>
+                  = {formatCurrency(socialBreakdown.accident)}
+                </FormulaLine>
+              </>
+            )}
           </BreakdownRow>
 
           <BreakdownRow label="Labor Fund" value={socialBreakdown.laborFund}>
-            <FormulaLine>
-              Labor Fund =
-              <FormulaParam
-                label="Social insurance base"
-                value={formatCurrency(socialInsuranceBase)}
-              />
-              *
-              <FormulaParam
-                label="Rate"
-                value={formatPercent(RYCZALT_2026.socialRates.laborFund)}
-              />
-            </FormulaLine>
-            <FormulaLine>
-              = {formatCurrency(socialBreakdown.laborFund)}
-            </FormulaLine>
+            {isUlga ? (
+              <FormulaNote>Not applicable under Ulga na start.</FormulaNote>
+            ) : isMaly ? (
+              <FormulaNote>Applies only to Duzy ZUS.</FormulaNote>
+            ) : (
+              <>
+                <FormulaLine>
+                  Labor Fund =
+                  <FormulaParam
+                    label="Social insurance base"
+                    value={formatCurrency(socialInsuranceBase)}
+                  />
+                  *
+                  <FormulaParam
+                    label="Rate"
+                    value={formatPercent(RYCZALT_2026.socialRates.laborFund)}
+                  />
+                </FormulaLine>
+                <FormulaLine>
+                  = {formatCurrency(socialBreakdown.laborFund)}
+                </FormulaLine>
+              </>
+            )}
           </BreakdownRow>
 
           <Divider />
 
           <BreakdownRow label="Social insurance total" value={socialInsurance}>
-            <FormulaLine>
-              Social insurance total =
-              <FormulaParam
-                label="Pension"
-                value={formatCurrency(socialBreakdown.pension)}
-              />
-              +
-              <FormulaParam
-                label="Disability"
-                value={formatCurrency(socialBreakdown.disability)}
-              />
-              +
-              <FormulaParam
-                label="Sickness"
-                value={formatCurrency(socialBreakdown.sickness)}
-              />
-              +
-              <FormulaParam
-                label="Accident"
-                value={formatCurrency(socialBreakdown.accident)}
-              />
-              +
-              <FormulaParam
-                label="Labor Fund"
-                value={formatCurrency(socialBreakdown.laborFund)}
-              />
-            </FormulaLine>
-            <FormulaLine>= {formatCurrency(socialInsurance)}</FormulaLine>
+            {isUlga ? (
+              <FormulaNote>
+                No social insurance is due under Ulga na start.
+              </FormulaNote>
+            ) : (
+              <>
+                <FormulaLine>
+                  Social insurance total =
+                  <FormulaParam
+                    label="Pension"
+                    value={formatCurrency(socialBreakdown.pension)}
+                  />
+                  +
+                  <FormulaParam
+                    label="Disability"
+                    value={formatCurrency(socialBreakdown.disability)}
+                  />
+                  +
+                  <FormulaParam
+                    label="Sickness"
+                    value={formatCurrency(socialBreakdown.sickness)}
+                  />
+                  +
+                  <FormulaParam
+                    label="Accident"
+                    value={formatCurrency(socialBreakdown.accident)}
+                  />
+                  +
+                  <FormulaParam
+                    label="Labor Fund"
+                    value={formatCurrency(socialBreakdown.laborFund)}
+                  />
+                </FormulaLine>
+                <FormulaLine>= {formatCurrency(socialInsurance)}</FormulaLine>
+              </>
+            )}
           </BreakdownRow>
         </Stack>
       </Stack>

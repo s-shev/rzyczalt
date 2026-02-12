@@ -95,6 +95,8 @@ const App = () => {
                   socialInsurance={result.socialInsurance}
                   socialInsuranceBase={result.socialInsuranceBase}
                   tierMultiplier={result.tierMultiplier}
+                  zusStage={zusStage}
+                  sicknessPaid={sicknessPaid}
                 />
               </Stack>
             </Grid>
